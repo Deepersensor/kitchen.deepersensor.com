@@ -1,19 +1,11 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState, useRef, Suspense } from "react";
+import { useRouter } from "next/navigation";
 import { AVAILABLE_MODELS, ModelId, getChatCompletion } from "@/lib/github-models";
 
-type ChatMessage = {
-  role: 'user' | 'assistant' | 'system';
-  content: string;
-  timestamp: number;
-  isLoading?: boolean;
-};
-
-type Theme = 'dark' | 'light' | 'synthwave' | 'cyberpunk';
-
-export default function ChatPage() {
+// Create a client component that uses searchParams
+function ChatContent() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -23,7 +15,6 @@ export default function ChatPage() {
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   // Initialize with system message
   useEffect(() => {
@@ -33,18 +24,21 @@ export default function ChatPage() {
       timestamp: Date.now(),
     }]);
     
-    // Check for model in URL
-    const modelParam = searchParams.get('model');
-    if (modelParam && Object.keys(AVAILABLE_MODELS).includes(modelParam)) {
-      setSelectedModel(modelParam as ModelId);
+    // Use URL params from browser instead of useSearchParams hook
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      
+      const modelParam = urlParams.get('model');
+      if (modelParam && Object.keys(AVAILABLE_MODELS).includes(modelParam)) {
+        setSelectedModel(modelParam as ModelId);
+      }
+      
+      const themeParam = urlParams.get('theme');
+      if (themeParam && ['dark', 'light', 'synthwave', 'cyberpunk'].includes(themeParam)) {
+        setTheme(themeParam as Theme);
+      }
     }
-    
-    // Check for theme in URL
-    const themeParam = searchParams.get('theme');
-    if (themeParam && ['dark', 'light', 'synthwave', 'cyberpunk'].includes(themeParam)) {
-      setTheme(themeParam as Theme);
-    }
-  }, [searchParams]);
+  }, []);
 
   // Auto scroll to bottom of messages
   useEffect(() => {
@@ -56,11 +50,13 @@ export default function ChatPage() {
     document.documentElement.setAttribute('data-theme', theme);
     
     // Update URL with theme
-    const params = new URLSearchParams(searchParams);
-    params.set('theme', theme);
-    params.set('model', selectedModel);
-    router.replace(`/chat?${params.toString()}`, { scroll: false });
-  }, [theme, selectedModel, router, searchParams]);
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      url.searchParams.set('theme', theme);
+      url.searchParams.set('model', selectedModel);
+      window.history.replaceState({}, '', url.toString());
+    }
+  }, [theme, selectedModel]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -302,5 +298,31 @@ export default function ChatPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Types for ChatContent component
+type ChatMessage = {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: number;
+  isLoading?: boolean;
+};
+
+type Theme = 'dark' | 'light' | 'synthwave' | 'cyberpunk';
+
+// Main page component with Suspense
+export default function ChatPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="kitchen-card p-8 rounded-xl flex flex-col items-center">
+          <div className="animate-spin h-12 w-12 border-4 border-[var(--accent)] border-t-transparent rounded-full mb-6"></div>
+          <p className="text-xl">Loading chat interface...</p>
+        </div>
+      </div>
+    }>
+      <ChatContent />
+    </Suspense>
   );
 }
