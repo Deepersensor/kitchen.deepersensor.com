@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation"; 
 
 // Project data
 const projects = [
@@ -37,15 +38,41 @@ export default function Home() {
   const [activeProject, setActiveProject] = useState("coodapp");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [promptValue, setPromptValue] = useState("");
+  const router = useRouter();
 
   const activeProjectData = projects.find(p => p.id === activeProject) || projects[0];
   
   const handlePromptSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real implementation, this would send the prompt to an API
-    console.log("Creating app from prompt:", promptValue);
-    // For demonstration purposes, clear the input
-    setPromptValue("");
+    
+    if (activeProject === "coodapp" && promptValue.trim()) {
+      // Store the prompt in session storage
+      const appName = generateRandomAppName();
+      sessionStorage.setItem(`coodapp:${appName}:prompt`, promptValue);
+      sessionStorage.setItem(`coodapp:${appName}:model`, "gpt-4o-mini"); // Default model
+      
+      // Navigate to the Coodapp page
+      router.push(`/coodapp/${appName}`);
+    }
+  };
+
+  // Generate a random app name for Coodapp
+  const generateRandomAppName = () => {
+    const adjectives = ["cosmic", "stellar", "vibrant", "swift", "lunar", "quantum", "radiant", "azure", "neon"];
+    const nouns = ["wave", "pulse", "byte", "pixel", "vista", "nova", "flow", "spark", "core"];
+    
+    const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+    const noun = nouns[Math.floor(Math.random() * nouns.length)];
+    
+    return `${adjective}-${noun}`;
+  };
+  
+  const handleNavigateToApp = (projectId: string) => {
+    if (projectId === "coodapp") {
+      router.push('/coodapp');
+    } else if (projectId === "chat") {
+      router.push('/chat');
+    }
   };
 
   return (
@@ -151,7 +178,10 @@ export default function Home() {
               
               {activeProject !== "coodapp" && (
                 <div className="flex gap-4 mt-4">
-                  <button className="magic-btn px-6 py-3 rounded-full text-white font-medium">
+                  <button 
+                    className="magic-btn px-6 py-3 rounded-full text-white font-medium"
+                    onClick={() => handleNavigateToApp(activeProject)}
+                  >
                     Try {activeProjectData.name}
                   </button>
                   <button className="kitchen-card px-6 py-3 rounded-full font-medium">
@@ -207,8 +237,13 @@ export default function Home() {
         </div>
 
         {/* Featured Projects Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {projects.map(project => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...projects, {
+            id: "chat",
+            name: "Kitchen Chat",
+            description: "Experience our experimental chat interface powered by multiple AI models",
+            image: "/project-chat.svg",
+          }].map(project => (
             <div key={project.id} className="kitchen-card p-6 spotlight">
               <div className="w-full aspect-video bg-black/20 rounded-lg mb-4 flex items-center justify-center">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--secondary)] flex items-center justify-center">
@@ -219,9 +254,11 @@ export default function Home() {
               <p className="opacity-70 mb-4">{project.description}</p>
               <button 
                 className="text-[var(--accent)] font-medium hover:underline"
-                onClick={() => setActiveProject(project.id)}
+                onClick={project.id === "chat" ? 
+                  () => router.push('/chat') : 
+                  () => setActiveProject(project.id)}
               >
-                View Details →
+                {project.id === "chat" ? "Open Chat →" : "View Details →"}
               </button>
             </div>
           ))}
