@@ -8,9 +8,10 @@ const projects = [
   {
     id: "coodapp",
     name: "Coodapp",
-    description: "Our flagship collaborative coding platform with real-time features",
+    description: "Create fully functional web applications directly from natural language prompts. Turn your ideas into code instantly.",
     image: "/project-coodapp.svg",
     isDefault: true,
+    features: ["AI-powered code generation", "Real-time preview", "One-click deployment", "Customizable templates"]
   },
   {
     id: "vexeroo",
@@ -35,8 +36,17 @@ const projects = [
 export default function Home() {
   const [activeProject, setActiveProject] = useState("coodapp");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [promptValue, setPromptValue] = useState("");
 
   const activeProjectData = projects.find(p => p.id === activeProject) || projects[0];
+  
+  const handlePromptSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // In a real implementation, this would send the prompt to an API
+    console.log("Creating app from prompt:", promptValue);
+    // For demonstration purposes, clear the input
+    setPromptValue("");
+  };
 
   return (
     <div className="min-h-screen flex flex-col p-8 sm:p-12 gap-8">
@@ -112,29 +122,88 @@ export default function Home() {
 
           {/* Project content */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="spotlight rounded-xl overflow-hidden aspect-video bg-black/20 flex items-center justify-center">
-              <div className="text-center p-6">
-                <div className="w-32 h-32 mx-auto mb-4 bg-gradient-to-br from-[var(--accent)] to-[var(--secondary)] rounded-full flex items-center justify-center">
-                  <span className="text-white text-4xl font-bold">{activeProjectData.name.charAt(0)}</span>
-                </div>
-                <p className="text-xl font-semibold">Preview Image</p>
-                <p className="text-sm opacity-70">Project visualization coming soon</p>
-              </div>
-            </div>
-            
             <div className="flex flex-col justify-center gap-6">
               <h3 className="text-3xl font-bold">{activeProjectData.name}</h3>
               <p className="opacity-80 text-lg">{activeProjectData.description}</p>
-              <div className="flex gap-4 mt-4">
-                <button className="magic-btn px-6 py-3 rounded-full text-white font-medium">
-                  Try {activeProjectData.name}
-                </button>
-                <button className="kitchen-card px-6 py-3 rounded-full font-medium">
-                  Learn More
-                </button>
-              </div>
+              
+              {activeProject === "coodapp" && (
+                <div className="mt-4">
+                  <form onSubmit={handlePromptSubmit} className="flex flex-col gap-4">
+                    <label className="flex flex-col gap-2">
+                      <span className="font-medium">Try it now:</span>
+                      <textarea 
+                        className="kitchen-card p-3 min-h-[100px] resize-none bg-black/10 text-[var(--foreground)]" 
+                        placeholder="Describe the app you want to build... (e.g., 'Create a to-do app with dark mode and drag-and-drop functionality')"
+                        value={promptValue}
+                        onChange={(e) => setPromptValue(e.target.value)}
+                      />
+                    </label>
+                    <button 
+                      type="submit" 
+                      className="magic-btn px-6 py-3 rounded-full text-white font-medium self-start"
+                      disabled={!promptValue.trim()}
+                    >
+                      Generate App
+                    </button>
+                  </form>
+                </div>
+              )}
+              
+              {activeProject !== "coodapp" && (
+                <div className="flex gap-4 mt-4">
+                  <button className="magic-btn px-6 py-3 rounded-full text-white font-medium">
+                    Try {activeProjectData.name}
+                  </button>
+                  <button className="kitchen-card px-6 py-3 rounded-full font-medium">
+                    Learn More
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="spotlight rounded-xl overflow-hidden aspect-video bg-black/20 flex items-center justify-center order-first md:order-last">
+              {activeProject === "coodapp" ? (
+                <div className="w-full h-full flex flex-col items-center justify-center p-4">
+                  <div className="w-full max-w-md kitchen-card p-6 mb-4">
+                    <div className="flex gap-2 mb-3">
+                      <div className="w-3 h-3 rounded-full bg-[#ff5f57]"></div>
+                      <div className="w-3 h-3 rounded-full bg-[#febc2e]"></div>
+                      <div className="w-3 h-3 rounded-full bg-[#28c840]"></div>
+                    </div>
+                    <div className="w-full h-4 bg-white/10 rounded mb-2"></div>
+                    <div className="w-4/5 h-4 bg-white/10 rounded mb-2"></div>
+                    <div className="w-3/5 h-4 bg-white/10 rounded mb-4"></div>
+                    <div className="w-full h-24 bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] opacity-40 rounded"></div>
+                  </div>
+                  <p className="text-center opacity-70">Prompt-to-code visualization</p>
+                </div>
+              ) : (
+                <div className="text-center p-6">
+                  <div className="w-32 h-32 mx-auto mb-4 bg-gradient-to-br from-[var(--accent)] to-[var(--secondary)] rounded-full flex items-center justify-center">
+                    <span className="text-white text-4xl font-bold">{activeProjectData.name.charAt(0)}</span>
+                  </div>
+                  <p className="text-xl font-semibold">Preview Image</p>
+                  <p className="text-sm opacity-70">Project visualization coming soon</p>
+                </div>
+              )}
             </div>
           </div>
+          
+          {activeProject === "coodapp" && (
+            <div className="mt-4">
+              <h4 className="text-xl font-medium mb-3">Key Features</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {activeProjectData.features?.map((feature, index) => (
+                  <div key={index} className="kitchen-card p-4 flex gap-3 items-start">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] flex items-center justify-center flex-shrink-0">
+                      <span className="text-white font-bold">{index + 1}</span>
+                    </div>
+                    <p>{feature}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Featured Projects Grid */}

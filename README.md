@@ -4,7 +4,7 @@ A surreal and magical showcase for experimental projects by DeeperSensor. This k
 
 ## Featured Projects
 
-- **Coodapp**: Our flagship collaborative coding platform
+- **Coodapp**: Create web applications directly from natural language prompts. Turn your ideas into code instantly with our AI-powered prompt-to-code experimental project.
 - **Vexeroo Cars**: Next generation autonomous vehicle interface 
 - **Web3lancer**: Decentralized freelancing platform
 - **BainaryGlobe AI**: Cutting-edge AI solutions
