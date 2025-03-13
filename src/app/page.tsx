@@ -279,7 +279,7 @@ export default function Home() {
         {/* Featured Projects Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {projects.map(project => (
-            <div key={project.id} className="kitchen-card p-6 spotlight"></div>
+            <div key={project.id} className="kitchen-card p-6 spotlight">
               <div className="w-full aspect-video bg-black/20 rounded-lg mb-4 flex items-center justify-center">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--secondary)] flex items-center justify-center">
                   <span className="text-white text-xl font-bold">{project.name.charAt(0)}</span>
@@ -292,7 +292,7 @@ export default function Home() {
                 onClick={project.id === "chat" || project.id === "coodapp" ? 
                   () => router.push(`/${project.id}`) : 
                   () => setActiveProject(project.id)}
-              ></button>
+              >
                 {(project.id === "chat" || project.id === "coodapp") ? `Open ${project.name} →` : "View Details →"}
               </button>
             </div>
