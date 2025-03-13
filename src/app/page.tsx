@@ -15,6 +15,13 @@ const projects = [
     features: ["AI-powered code generation", "Real-time preview", "One-click deployment", "Customizable templates"]
   },
   {
+    id: "chat",
+    name: "Kitchen Chat",
+    description: "Experience our experimental chat interface powered by multiple AI models",
+    image: "/project-chat.svg",
+    features: ["Multiple AI models", "Customizable themes", "Seamless conversation", "Model comparison"]
+  },
+  {
     id: "vexeroo",
     name: "Vexeroo Cars",
     description: "Next generation autonomous vehicle interface",
@@ -207,6 +214,23 @@ export default function Home() {
                   </div>
                   <p className="text-center opacity-70">Prompt-to-code visualization</p>
                 </div>
+              ) : activeProject === "chat" ? (
+                <div className="w-full h-full flex flex-col items-center justify-center p-4">
+                  <div className="w-full max-w-md kitchen-card p-6 mb-4">
+                    <div className="flex flex-col gap-3">
+                      <div className="ml-auto max-w-[80%] bg-[var(--accent)]/20 p-3 rounded-lg">
+                        <div className="h-3 w-24 bg-white/30 rounded mb-2"></div>
+                        <div className="h-3 w-32 bg-white/30 rounded"></div>
+                      </div>
+                      <div className="mr-auto max-w-[80%] bg-[var(--secondary)]/20 p-3 rounded-lg">
+                        <div className="h-3 w-40 bg-white/30 rounded mb-2"></div>
+                        <div className="h-3 w-28 bg-white/30 rounded mb-2"></div>
+                        <div className="h-3 w-36 bg-white/30 rounded"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-center opacity-70">AI-powered chat interface</p>
+                </div>
               ) : (
                 <div className="text-center p-6">
                   <div className="w-32 h-32 mx-auto mb-4 bg-gradient-to-br from-[var(--accent)] to-[var(--secondary)] rounded-full flex items-center justify-center">
@@ -219,11 +243,27 @@ export default function Home() {
             </div>
           </div>
           
-          {activeProject === "coodapp" && (
+          {activeProject === "coodapp" && activeProjectData.features && (
             <div className="mt-4">
               <h4 className="text-xl font-medium mb-3">Key Features</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {activeProjectData.features?.map((feature, index) => (
+                {activeProjectData.features.map((feature, index) => (
+                  <div key={index} className="kitchen-card p-4 flex gap-3 items-start">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] flex items-center justify-center flex-shrink-0">
+                      <span className="text-white font-bold">{index + 1}</span>
+                    </div>
+                    <p>{feature}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          {activeProject === "chat" && activeProjectData.features && (
+            <div className="mt-4">
+              <h4 className="text-xl font-medium mb-3">Key Features</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {activeProjectData.features.map((feature, index) => (
                   <div key={index} className="kitchen-card p-4 flex gap-3 items-start">
                     <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[var(--accent)] to-[var(--secondary)] flex items-center justify-center flex-shrink-0">
                       <span className="text-white font-bold">{index + 1}</span>
@@ -238,13 +278,8 @@ export default function Home() {
 
         {/* Featured Projects Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[...projects, {
-            id: "chat",
-            name: "Kitchen Chat",
-            description: "Experience our experimental chat interface powered by multiple AI models",
-            image: "/project-chat.svg",
-          }].map(project => (
-            <div key={project.id} className="kitchen-card p-6 spotlight">
+          {projects.map(project => (
+            <div key={project.id} className="kitchen-card p-6 spotlight"></div>
               <div className="w-full aspect-video bg-black/20 rounded-lg mb-4 flex items-center justify-center">
                 <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--accent)] to-[var(--secondary)] flex items-center justify-center">
                   <span className="text-white text-xl font-bold">{project.name.charAt(0)}</span>
@@ -254,11 +289,11 @@ export default function Home() {
               <p className="opacity-70 mb-4">{project.description}</p>
               <button 
                 className="text-[var(--accent)] font-medium hover:underline"
-                onClick={project.id === "chat" ? 
-                  () => router.push('/chat') : 
+                onClick={project.id === "chat" || project.id === "coodapp" ? 
+                  () => router.push(`/${project.id}`) : 
                   () => setActiveProject(project.id)}
-              >
-                {project.id === "chat" ? "Open Chat →" : "View Details →"}
+              ></button>
+                {(project.id === "chat" || project.id === "coodapp") ? `Open ${project.name} →` : "View Details →"}
               </button>
             </div>
           ))}
