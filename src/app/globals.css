@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+:root {
+  --background: #041220;
+  --foreground: #f0f8ff;
+  --accent: #00c4cc;
+  --secondary: #ff3e80;
+  --tertiary: #ffd700;
+  --kitchen-overlay: rgba(6, 36, 64, 0.75);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #e4f2ff;
+    --foreground: #041220;
+    --kitchen-overlay: rgba(228, 242, 255, 0.85);
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  background-image: radial-gradient(circle at 10% 20%, rgba(0, 196, 204, 0.2) 0%, transparent 50%),
+                   radial-gradient(circle at 90% 80%, rgba(255, 62, 128, 0.15) 0%, transparent 50%);
+  background-attachment: fixed;
+}
+
+.kitchen-card {
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  background: var(--kitchen-overlay);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.kitchen-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 196, 204, 0.2);
+}
+
+.magic-btn {
+  background: linear-gradient(135deg, var(--accent), var(--secondary));
+  transition: all 0.3s ease;
+}
+
+.magic-btn:hover {
+  background: linear-gradient(135deg, var(--secondary), var(--accent));
+  transform: scale(1.05);
+}
+
+.spotlight {
+  position: relative;
+  overflow: hidden;
+}
+
+.spotlight::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 40%);
+  opacity: 0;
+  transition: opacity 0.5s;
+  pointer-events: none;
+}
+
+.spotlight:hover::after {
+  opacity: 1;
+}
+
+.dropdown-content {
+  transform-origin: top;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
